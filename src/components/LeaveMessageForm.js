@@ -5,7 +5,7 @@ import abiJson from "../abi/GraduationBoardAbi.json";
 const abi = abiJson.abi;
 const contractAddress = "0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9";
 
-export default function LeaveMessageForm({ currentAccount }) {
+export default function LeaveMessageForm({ currentAccount, onMessageSent }) {
   const [targetAddress, setTargetAddress] = useState("");
   const [content, setContent] = useState("");
 
@@ -21,10 +21,12 @@ export default function LeaveMessageForm({ currentAccount }) {
       const contract = new ethers.Contract(contractAddress, abi, signer);
 
       const tx = await contract.leaveMessage(targetAddress, content, {
-        value: ethers.parseEther("0.01")
+        value: ethers.parseEther("0.01"),
       });
       await tx.wait();
+
       alert("留言成功！");
+      if (onMessageSent) onMessageSent(); // ✅ 通知父元件重新整理留言
     } catch (err) {
       console.error(err);
       alert("留言失敗！");
